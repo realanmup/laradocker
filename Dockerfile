@@ -5,7 +5,8 @@ RUN apt install \
 	curl \
 	git \
 	zip unzip \ 
-	libpng-dev -yqq && echo "Installing basics completed"
+	libpng-dev \
+	apt-utils -yqq && echo "Installing basics completed"
 
 # Install php and required extensions
 RUN DEBIAN_FRONTEND=noninteractive apt install -yqq \
