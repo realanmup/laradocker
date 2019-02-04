@@ -1,5 +1,8 @@
 FROM realanmup/ubuntu18np:latest
 
+# Update from server first
+RUN apt-get update
+
 # Installing basics
 RUN apt install \
 	curl \
