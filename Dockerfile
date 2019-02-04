@@ -20,6 +20,8 @@ RUN echo $TIMEZONE > /etc/timezone && echo "date.timezone=$TIMEZONE" > /etc/php/
 # Installing Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin/ --filename=composer
 
+# Support for shell script in windows/mac
+RUN apt install dos2unix
 
 # Installing Node and package managers
 RUN apt install nodejs npm -yqq && npm -g i yarn
