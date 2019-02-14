@@ -9,6 +9,7 @@ RUN apt install \
 	git \
 	zip unzip \ 
 	libpng-dev \
+	nano \
 	apt-utils -yqq && echo "Installing basics completed"
 
 # Install php and required extensions
@@ -16,6 +17,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt install -yqq \
         php7.2          php7.2-bcmath       php7.2-mbstring \
         php7.2-curl     php7.2-xml          php-zip \
         php-mysql       php-pgsql           php-fpm  \
+	php-ext \
     && echo "PHP installation complete"
 
 # Setting up timezones
@@ -31,7 +33,7 @@ RUN apt install dos2unix
 RUN apt install nodejs npm -yqq && npm -g i yarn
 
 # Remove apache2 & install nginx
-RUN apt-get purge apache2 -yqq && apt-get install nginx -yqq && service nginx start
+RUN apt-get purge apache2 -yqq && apt-get install nginx -yqq && service nginx start && service php7.2-fpm start
 
 # Host on port 80
 EXPOSE 80
