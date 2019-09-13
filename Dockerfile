@@ -1,7 +1,7 @@
 FROM realanmup/ubuntu18np:latest
 
 # Update from server first
-RUN apt-get update
+RUN apt-get update -yqq
 
 # Installing basics
 RUN apt install \
