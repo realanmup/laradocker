@@ -17,7 +17,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt install -yqq \
         php7.2          php7.2-bcmath       php7.2-mbstring \
         php7.2-curl     php7.2-xml          php-zip \
         php-mysql       php-pgsql           php-fpm  \
-	php-ext \
+	php-ext         php-gd \
     && echo "PHP installation complete"
 
 # Setting up timezones
