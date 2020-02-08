@@ -32,7 +32,32 @@ RUN apt install dos2unix
 RUN apt install nodejs npm -yqq && npm -g i yarn
 
 # Remove apache2 & install nginx
-RUN apt-get purge apache2 -yqq && apt-get install nginx -yqq && service nginx start && service php7.2-fpm start
+RUN apt-get purge apache2 -yqq && apt-get install nginx -yqq 
 
-# Host on port 80
+# Copy Nginx Default Config
+COPY nginx.conf /etc/nginx/sites-enabled/default
+
+COPY public/ /var/www/public/
+
+# Forward request logs to Docker log collector
+RUN ln -sf /dev/stdout /var/log/nginx/access.log \
+  && ln -sf /dev/stderr /var/log/nginx/error.log
+
 EXPOSE 80
+
+STOPSIGNAL SIGTERM
+
+RUN echo 'service php7.2-fpm start && /usr/sbin/nginx -g "daemon off;"' > /usr/bin/start_laradocker
+
+CMD ["sh", "/usr/bin/start_laradocker"]
+
+ARG USER_ID=1000
+ARG GROUP_ID=1000
+
+RUN userdel -f www-data &&\
+    if getent group www-data ; then groupdel www-data; fi &&\
+    groupadd -g ${GROUP_ID} www-data &&\
+    useradd -l -u ${USER_ID} -g www-data www-data &&\
+    install -d -m 0755 -o www-data -g www-data /home/www-data
+
+WORKDIR /var/www/
