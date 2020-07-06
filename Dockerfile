@@ -29,7 +29,7 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin/ 
 RUN apt install dos2unix
 
 # Installing Node and package managers
-RUN apt install nodejs npm -yqq && npm -g i yarn
+RUN apt install nodejs npm -yqq && npm -g i n && npm -g i yarn && n 12
 
 # Remove apache2 & install nginx
 RUN apt-get purge apache2 -yqq && apt-get install nginx -yqq 
