@@ -51,6 +51,10 @@ COPY public/ /var/www/public/
 # Forward request logs to Docker log collector
 RUN ln -sf /dev/stdout /var/log/nginx/access.log \
   && ln -sf /dev/stderr /var/log/nginx/error.log
+  
+EXPOSE 80
+
+STOPSIGNAL SIGTERM
 
 RUN echo 'service php7.4-fpm start && /usr/sbin/nginx -g "daemon off;"' > /usr/bin/start_laradocker
 
@@ -65,7 +69,4 @@ RUN userdel -f www-data &&\
     useradd -l -u ${USER_ID} -g www-data www-data &&\
     install -d -m 0755 -o www-data -g www-data /home/www-data
 
-EXPOSE 80
 WORKDIR /var/www/
-
-STOPSIGNAL SIGTERM
