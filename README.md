@@ -1,9 +1,9 @@
 # laradocker
 
 # Installs
-  ## Ubuntu 18.04
+  ## Ubuntu 20.10
   ## Apt source from NP
-  ## php7.2, composer
+  ## php7.4, composer
   ## node:latest, npm, yarn
   ## nginx
   
