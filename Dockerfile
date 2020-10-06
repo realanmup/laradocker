@@ -1,4 +1,4 @@
-FROM realanmup/ubuntu18np:latest
+FROM ubuntu:20.10
 
 # Update from server first
 RUN apt-get update -yqq
@@ -10,29 +10,38 @@ RUN apt install \
 	zip unzip \ 
 	libpng-dev \
 	nano \
+  cron \
+  dos2unix \
 	apt-utils -yqq && echo "Installing basics completed"
 
 # Install php and required extensions
 RUN DEBIAN_FRONTEND=noninteractive apt install -yqq \
-        php7.2          php7.2-bcmath       php7.2-mbstring \
-        php7.2-curl     php7.2-xml          php-zip \
-        php-mysql       php-pgsql           php-fpm  \
-	php-gd && echo "PHP installation complete"
-
-# Setting up timezones
-RUN echo $TIMEZONE > /etc/timezone && echo "date.timezone=$TIMEZONE" > /etc/php/7.2/cli/conf.d/timezone.ini
+        php          php-bcmath       php-mbstring \
+        php-curl     php-xml          php-zip \
+        php-mysql    php-pgsql        php-fpm  \
+	      php-gd    php-curl && echo "PHP installation complete"
 
 # Installing Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin/ --filename=composer
 
-# Support for shell script in windows/mac
-RUN apt install dos2unix
-
 # Installing Node and package managers
-RUN apt install nodejs npm -yqq && npm -g i n && npm -g i yarn && n 12
+ENV NVM_DIR /usr/local
+ENV NODE_VERSION 14
+
+# Install nvm with node and npm
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.36.0/install.sh | bash \
+    && . $NVM_DIR/nvm.sh \
+    && nvm install $NODE_VERSION \
+    && nvm alias default $NODE_VERSION \
+    && nvm use default
 
 # Remove apache2 & install nginx
 RUN apt-get purge apache2 -yqq && apt-get install nginx -yqq 
+
+# To Run Cron Job
+COPY cron cron
+
+RUN crontab cron && cron
 
 # Copy Nginx Default Config
 COPY nginx.conf /etc/nginx/sites-enabled/default
@@ -43,11 +52,7 @@ COPY public/ /var/www/public/
 RUN ln -sf /dev/stdout /var/log/nginx/access.log \
   && ln -sf /dev/stderr /var/log/nginx/error.log
 
-EXPOSE 80
-
-STOPSIGNAL SIGTERM
-
-RUN echo 'service php7.2-fpm start && /usr/sbin/nginx -g "daemon off;"' > /usr/bin/start_laradocker
+RUN echo 'service php7.4-fpm start && /usr/sbin/nginx -g "daemon off;"' > /usr/bin/start_laradocker
 
 CMD ["sh", "/usr/bin/start_laradocker"]
 
@@ -60,4 +65,7 @@ RUN userdel -f www-data &&\
     useradd -l -u ${USER_ID} -g www-data www-data &&\
     install -d -m 0755 -o www-data -g www-data /home/www-data
 
+EXPOSE 80
 WORKDIR /var/www/
+
+STOPSIGNAL SIGTERM
