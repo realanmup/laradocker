@@ -19,7 +19,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt install -yqq \
         php          php-bcmath       php-mbstring \
         php-curl     php-xml          php-zip \
         php-mysql    php-pgsql        php-fpm  \
-	      php-gd    php-curl && echo "PHP installation complete"
+	php-redis      php-gd    php-curl && echo "PHP installation complete"
 
 # Installing Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin/ --filename=composer
