@@ -8,9 +8,8 @@ ENV NODE_VERSION 14
 # Basic Packages
 RUN apt-get update -yqq && apt install \
 	curl    git     zip     unzip   libpng-dev \
-    nano    supervisor      dos2unix    nginx \
-    nodejs  npm \
-	apt-utils -yqq && echo "Installing basics completed"
+  nano    supervisor      dos2unix    nginx \
+  nodejs  npm    apt-utils     imagemagick  -yqq && echo "Installing basics completed"
 
 # Install php and required extensions
 RUN DEBIAN_FRONTEND=noninteractive apt install -yqq \
