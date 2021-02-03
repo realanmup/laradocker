@@ -14,7 +14,7 @@ RUN apt install \
 	zip unzip \ 
 	libpng-dev \
 	nano \
-  cron \
+  cron \ supervisor \
   dos2unix \
 	apt-utils -yqq && echo "Installing basics completed"
 
