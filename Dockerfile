@@ -28,9 +28,12 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin/ 
 # Upgrading NodeJS
 RUN npm i -g n && n $NODE_VERSION
 
-# Copy Nginx Default Config
-COPY nginx.conf /etc/nginx/sites-enabled/default
+# Copy Nginx Configs
+COPY nginx/nginx.conf /etc/nginx/nginx.conf
+COPY nginx/default /etc/nginx/sites-enabled/default
+
 COPY public/ /var/www/public/
+
 # Forward request logs to Docker log collector
 RUN ln -sf /dev/stdout /var/log/nginx/access.log \
   && ln -sf /dev/stderr /var/log/nginx/error.log
