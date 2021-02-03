@@ -1,2 +1,0 @@
-* * * * * php /var/www/artisan schedule:run >> /proc/1/fd/1 2>&1
-#This extra line makes it a valid cron

@@ -2,9 +2,10 @@
 
 # Installs
   ## Ubuntu 20.10
-  ## Apt source from NP
-  ## php7.4, composer
-  ## node:latest, npm, yarn
+  ## php7.4, composer 2
+  ## node:14, npm
+  ## supervisor
   ## nginx
+  ## dos2unix
   
 ### Demo: https://github.com/realanmup/laradocker-demo
