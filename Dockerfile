@@ -17,7 +17,8 @@ RUN DEBIAN_FRONTEND=noninteractive apt install -yqq \
         php          php-bcmath       php-mbstring \
         php-curl     php-xml          php-zip \
         php-mysql    php-pgsql        php-fpm  \
-        php-redis    php-gd           php-curl && echo "PHP installation complete"
+        php-imagick  php-redis        php-gd \
+        php-curl && echo "PHP installation complete"
 
 # Remove apache2 & install nginx nodejs npm
 RUN apt-get purge apache2 -yqq && apt autoremove -yqq
