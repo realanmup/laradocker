@@ -9,15 +9,18 @@ ENV NODE_VERSION 14
 RUN apt-get update -yqq && apt install \
 	curl    git     zip     unzip   libpng-dev \
   nano    supervisor      dos2unix    nginx \
+  software-properties-common \
   nodejs  npm    apt-utils     imagemagick  -yqq && echo "Installing basics completed"
+
+RUN add-apt-repository ppa:ondrej/php
 
 # Install php and required extensions
 RUN DEBIAN_FRONTEND=noninteractive apt install -yqq \
-        php          php-bcmath       php-mbstring \
-        php-curl     php-xml          php-zip \
-        php-mysql    php-pgsql        php-fpm  \
-        php-imagick  php-redis        php-gd \
-        php-curl && echo "PHP installation complete"
+        php8.0          php8.0-bcmath       php8.0-mbstring \
+        php8.0-curl     php8.0-xml          php8.0-zip \
+        php8.0-mysql    php8.0-pgsql        php8.0-fpm  \
+        php8.0-imagick  php8.0-redis        php8.0-gd \
+        php8.0-curl     php8.0-imagick && echo "PHP installation complete"
 
 # Remove apache2 & install nginx nodejs npm
 RUN apt-get purge apache2 -yqq && apt autoremove -yqq
@@ -39,7 +42,7 @@ RUN ln -sf /dev/stdout /var/log/nginx/access.log \
   && ln -sf /dev/stderr /var/log/nginx/error.log
   
 # script: start_laradocker
-RUN echo 'service php7.4-fpm start && /usr/sbin/nginx -g "daemon off;"' > /usr/bin/start_laradocker && chmod +x /usr/bin/start_laradocker
+RUN echo 'service php8.0-fpm start && /usr/sbin/nginx -g "daemon off;"' > /usr/bin/start_laradocker && chmod +x /usr/bin/start_laradocker
 
 # Set www-data user to host
 RUN userdel -f www-data &&\
