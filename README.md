@@ -1,9 +1,9 @@
 # laradocker
 
 # Installs
-  ## Ubuntu 20.10
-  ## php7.4, composer 2
-  ## node:14, npm
+  ## Ubuntu 22.04
+  ## php8.1, composer 2.3
+  ## node:16, npm
   ## supervisor
   ## nginx
   ## dos2unix

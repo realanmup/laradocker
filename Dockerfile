@@ -1,12 +1,12 @@
-FROM ubuntu:20.10
+FROM ubuntu:22.04
 
 # CONF
 ARG USER_ID=1000
 ARG GROUP_ID=1000
-ENV NODE_VERSION 14
+ENV NODE_VERSION 16
 
 # Basic Packages
-RUN apt-get update -yqq && apt install \
+RUN apt-get update -yq && apt install \
 	curl    git     zip     unzip   libpng-dev \
   nano    supervisor      dos2unix    nginx \
   nodejs  npm    apt-utils     imagemagick  -yqq && echo "Installing basics completed"
@@ -17,7 +17,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt install -yqq \
         php-curl     php-xml          php-zip \
         php-mysql    php-pgsql        php-fpm  \
         php-imagick  php-redis        php-gd \
-        php-curl && echo "PHP installation complete"
+        php-curl php-gmp && echo "PHP installation complete"
 
 # Remove apache2 & install nginx nodejs npm
 RUN apt-get purge apache2 -yqq && apt autoremove -yqq
