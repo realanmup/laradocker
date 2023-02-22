@@ -39,7 +39,7 @@ RUN ln -sf /dev/stdout /var/log/nginx/access.log \
   && ln -sf /dev/stderr /var/log/nginx/error.log
   
 # script: start_laradocker
-RUN echo 'service php7.4-fpm start && /usr/sbin/nginx -g "daemon off;"' > /usr/bin/start_laradocker && chmod +x /usr/bin/start_laradocker
+RUN echo 'service php8.1-fpm start && /usr/sbin/nginx -g "daemon off;"' > /usr/bin/start_laradocker && chmod +x /usr/bin/start_laradocker
 
 # Set www-data user to host
 RUN userdel -f www-data &&\
