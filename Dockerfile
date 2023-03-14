@@ -11,13 +11,16 @@ RUN apt-get update -yq && apt install \
   nano    supervisor      dos2unix    nginx \
   nodejs  npm    apt-utils     imagemagick  -yqq && echo "Installing basics completed"
 
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Europe/Paris
+
 # Install php and required extensions
-RUN DEBIAN_FRONTEND=noninteractive apt install -yqq \
-        php          php-bcmath       php-mbstring \
+RUN apt-get update -yq && apt install -yqq \
+        tzdata       php              php-bcmath    php-mbstring \
         php-curl     php-xml          php-zip \
         php-mysql    php-pgsql        php-fpm  \
         php-imagick  php-redis        php-gd \
-        php-curl php-gmp && echo "PHP installation complete"
+        php-curl php-gmp php8.1-mongodb && echo "PHP installation complete"
 
 # Remove apache2 & install nginx nodejs npm
 RUN apt-get purge apache2 -yqq && apt autoremove -yqq
