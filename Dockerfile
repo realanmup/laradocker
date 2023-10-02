@@ -8,7 +8,7 @@ ENV NODE_VERSION 16
 # Basic Packages
 RUN apt-get update -yq && apt install \
 	curl    git     zip     unzip   libpng-dev \
-  nano    supervisor      dos2unix    nginx \
+  nano    supervisor      dos2unix    nginx rsync \
   nodejs  npm    apt-utils     imagemagick  -yqq && echo "Installing basics completed"
 
 ARG DEBIAN_FRONTEND=noninteractive
