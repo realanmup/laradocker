@@ -20,6 +20,7 @@ RUN apt-get update -yq && apt install -yqq \
         php-curl     php-xml          php-zip \
         php-mysql    php-pgsql        php-fpm  \
         php-imagick  php-redis        php-gd \
+	php-intl \
         php-curl php-gmp php8.1-mongodb php-sqlite3 && echo "PHP installation complete"
 
 # Remove apache2 & install nginx nodejs npm
