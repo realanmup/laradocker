@@ -3,7 +3,7 @@ FROM ubuntu:22.04
 # CONF
 ARG USER_ID=1000
 ARG GROUP_ID=1000
-ENV NODE_VERSION 16
+ENV NODE_VERSION 18
 
 # Basic Packages
 RUN apt-get update -yq && apt install \
