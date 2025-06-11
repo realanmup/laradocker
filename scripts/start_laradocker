@@ -1,0 +1,34 @@
+#!/bin/bash
+
+# Get PHP_FPM_BACKEND environment variable
+PHP_FPM_BACKEND="${PHP_FPM_BACKEND:-127.0.0.1:9000}"
+
+# Update /etc/nginx/sites-enabled/default with PHP_FPM_BACKEND
+for file in /etc/nginx/sites-enabled/*; do
+    sed -i "s|fastcgi_pass .*;|fastcgi_pass ${PHP_FPM_BACKEND};|g" "$file"
+done
+
+# By default, listen on socket. If TCPMODE is enabled, listen on 0.0.0.0:9000
+if [[ "${TCPMODE}" == "enabled" ]]; then
+    sed -i "s|^listen = .*|listen = 0.0.0.0:9000|g" /etc/php/${PHP_VERSION}/fpm/pool.d/www.conf
+fi
+
+if [[ "$1" == "nginx" ]]; then
+    # Start Nginx in the foreground, send logs to stdout/stderr
+    nginx -g 'daemon off;' \
+        1>/proc/self/fd/1 \
+        2>/proc/self/fd/2
+elif [[ "$1" == "php" ]]; then
+    # Start PHP-FPM in the foreground, send logs to stdout/stderr
+    php-fpm${PHP_VERSION} --nodaemonize --force-stderr \
+        1>/proc/self/fd/1 \
+        2>/proc/self/fd/2
+else
+    # Start both Nginx and PHP-FPM in the background, then wait
+    nginx -g 'daemon off;' \
+        1>/proc/self/fd/1 \
+        2>/proc/self/fd/2 &
+    php-fpm${PHP_VERSION} --nodaemonize --force-stderr \
+        1>/proc/self/fd/1 \
+        2>/proc/self/fd/2 
+fi

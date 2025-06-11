@@ -1,66 +1,62 @@
-FROM  --platform=linux/amd64 ubuntu:22.04
+FROM --platform=linux/amd64 ubuntu:24.04
 
 # CONF
 ARG USER_ID=1000
 ARG GROUP_ID=1000
 ENV NODE_VERSION 20
-
-# Basic Packages
-RUN apt-get update -yq && apt install \
-  software-properties-common \
-	curl    git     zip     unzip   libpng-dev \
-  nano    supervisor      dos2unix    nginx rsync \
-  nodejs  npm    apt-utils     imagemagick  -yqq && echo "Installing basics completed"
-
-RUN add-apt-repository ppa:ondrej/php
-
 ARG DEBIAN_FRONTEND=noninteractive
-ENV TZ=Europe/Paris
+ENV TZ=Asia/Kathmandu
+ARG PHP_VERSION=8.3
+ENV PHP_VERSION=${PHP_VERSION}
 
-# Install php and required extensions
-RUN apt-get update -yq && apt install -yqq \
-        php8.2-fpm libapache2-mod-fcgid \
-        tzdata          php8.2              php8.2-bcmath   \
-        php8.2-mbstring \
-        php8.2-curl     php8.2-xml          php8.2-zip \
-        php8.2-mysql    php8.2-pgsql        php8.2-fpm  \
-        php8.2-imagick  php8.2-redis        php8.2-gd \
-        php8.2-intl \
-        php8.2-curl php8.2-gmp php8.2-mongodb php8.2-sqlite3 && echo "PHP installation complete"
+# Basic Packages + PHP + Extensions + Nginx + NodeJS + Composer
+RUN apt-get update -yq && \
+    apt-get install -yqq software-properties-common curl git zip unzip libpng-dev nano supervisor nginx rsync nodejs npm apt-utils imagemagick ghostscript ffmpeg && \
+    echo "Installing basics completed" && \
+    add-apt-repository ppa:ondrej/php && \
+    apt-get update -yq && \
+    apt-get install -yqq php${PHP_VERSION}-fpm libapache2-mod-fcgid tzdata php${PHP_VERSION} php${PHP_VERSION}-bcmath php${PHP_VERSION}-mbstring php${PHP_VERSION}-curl php${PHP_VERSION}-xml php${PHP_VERSION}-zip php${PHP_VERSION}-mysql php${PHP_VERSION}-pgsql php${PHP_VERSION}-fpm php${PHP_VERSION}-imagick php${PHP_VERSION}-redis php${PHP_VERSION}-gd php${PHP_VERSION}-intl php${PHP_VERSION}-gmp php${PHP_VERSION}-mongodb php${PHP_VERSION}-sqlite3 php${PHP_VERSION}-exif && \
+    echo "PHP installation complete" && \
+    apt-get purge apache2 -yqq && apt autoremove -yqq && \
+    curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin/ --filename=composer && \
+    npm i -g n && n $NODE_VERSION  && \
+    apt clean && rm -rf /var/lib/apt/lists/*
 
-# Remove apache2 & install nginx nodejs npm
-RUN apt-get purge apache2 -yqq && apt autoremove -yqq
+# Enable PDF support in ImageMagick
+RUN sed -i 's/<policy domain="coder" rights="none" pattern="PDF" \/>/<policy domain="coder" rights="read|write" pattern="PDF" \/>/' /etc/ImageMagick-6/policy.xml && \
+    sed -i 's/<policy domain="coder" rights="none" pattern="PS" \/>/<policy domain="coder" rights="read|write" pattern="PS" \/>/' /etc/ImageMagick-6/policy.xml && \
+    sed -i 's/<policy domain="coder" rights="none" pattern="EPS" \/>/<policy domain="coder" rights="read|write" pattern="EPS" \/>/' /etc/ImageMagick-6/policy.xml && \
+    apt-get install -yq php${PHP_VERSION}-dompdf
 
-# Installing Composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin/ --filename=composer
-
-# Upgrading NodeJS
-RUN npm i -g n && n $NODE_VERSION
-
-# Copy Nginx Configs
+# Configure Nginx
 COPY nginx/nginx.conf /etc/nginx/nginx.conf
 COPY nginx/default /etc/nginx/sites-enabled/default
 
-COPY public/ /var/www/public/
+# Configure PHP
+COPY php/php.ini /etc/php/${PHP_VERSION}/fpm/php.ini 
+COPY php/php-fpm.conf /etc/php/${PHP_VERSION}/fpm/php-fpm.conf
+COPY php/www.conf /etc/php/${PHP_VERSION}/fpm/pool.d/www.conf
 
-# Forward request logs to Docker log collector
-RUN ln -sf /dev/stdout /var/log/nginx/access.log \
-  && ln -sf /dev/stderr /var/log/nginx/error.log
-  
-# script: start_laradocker
-RUN echo 'service php8.2-fpm start && /usr/sbin/nginx -g "daemon off;"' > /usr/bin/start_laradocker && chmod +x /usr/bin/start_laradocker
+# Configure default index.php
+COPY public/index.php /var/www/public/index.php
+
+# Configure boot loader
+COPY scripts/start_laradocker /usr/bin/start_laradocker
+RUN chmod +x /usr/bin/start_laradocker
 
 # Set www-data user to host
-RUN userdel -f www-data &&\
-    if getent group www-data ; then groupdel www-data; fi &&\
-    groupadd -g ${GROUP_ID} www-data &&\
-    useradd -l -u ${USER_ID} -g www-data www-data &&\
+RUN userdel -f www-data && \
+    if getent group www-data ; then groupdel www-data; fi && \
+    groupadd -g ${GROUP_ID} www-data && \
+    useradd -l -u ${USER_ID} -g www-data www-data && \
     install -d -m 0755 -o www-data -g www-data /home/www-data
 
 WORKDIR /var/www/
 
 STOPSIGNAL SIGTERM
 
-EXPOSE 80
+EXPOSE 80 443 9000
+
+ENV PHP_FPM_BACKEND="unix:/run/php/php${PHP_VERSION}-fpm.sock"
 
 CMD ["sh", "/usr/bin/start_laradocker"]
