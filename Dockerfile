@@ -40,7 +40,7 @@ COPY php/php-fpm.conf /etc/php/${PHP_VERSION}/fpm/php-fpm.conf
 COPY php/www.conf /etc/php/${PHP_VERSION}/fpm/pool.d/www.conf
 
 # Configure default index.php
-COPY public/index.php /var/www/public/index.php
+COPY public/index.php /var/www/html/index.php
 
 # Configure boot loader
 COPY scripts/start_laradocker /usr/bin/start_laradocker
