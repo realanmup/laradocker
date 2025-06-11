@@ -1,10 +1,20 @@
 # laradocker
 
 # Installs
-  ## Ubuntu 22.04
-  ## php8.2, composer 2.3
-  ## node:18, npm
+  ## Ubuntu 24.04
+  ## TZ=Asia/Kathmandu
+  ## php8.3 & composer 
+  ## node:20, npm
   ## supervisor
   ## nginx
-  ## dos2unix
-  
+  ## ffmpeg
+  ## imagemagick & ghostscript
+  ## rsync
+  ## curl git unzip and many more
+
+## Logging
+  Logs are thrown to stdout directly
+
+    /proc/self/fd/2 # Error Log
+
+    /proc/self/fd/1 # StdOut

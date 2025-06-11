@@ -57,7 +57,7 @@ server {
                 include fastcgi_params;
 
                # With php-fpm (or other unix sockets):
-               # fastcgi_pass unix:/run/php/php7.4-fpm.sock;
+               # fastcgi_pass unix:/run/php/php8.3-fpm.sock;
                # With php-cgi (or other tcp sockets):
                fastcgi_pass ${PHP_FPM_BACKEND};
         }
