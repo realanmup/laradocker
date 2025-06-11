@@ -1,26 +1,28 @@
-FROM ubuntu:20.10
+FROM ubuntu:20.04
 
 # CONF
 ARG USER_ID=1000
 ARG GROUP_ID=1000
-ENV NODE_VERSION 14
+ENV NODE_VERSION 16
+
+RUN apt-get update -yqq && apt-get install software-properties-common -yqq
+RUN add-apt-repository ppa:ondrej/php && add-apt-repository ppa:nginx/stable
 
 # Basic Packages
 RUN apt-get update -yqq && apt install \
 	curl    git     zip     unzip   libpng-dev \
   nano    supervisor      dos2unix    nginx \
-  software-properties-common \
+  jpegoptim optipng pngquant gifsicle \
+  rsync openssh-client \
   nodejs  npm    apt-utils     imagemagick  -yqq && echo "Installing basics completed"
-
-RUN add-apt-repository ppa:ondrej/php
 
 # Install php and required extensions
 RUN DEBIAN_FRONTEND=noninteractive apt install -yqq \
-        php8.0          php8.0-bcmath       php8.0-mbstring \
-        php8.0-curl     php8.0-xml          php8.0-zip \
-        php8.0-mysql    php8.0-pgsql        php8.0-fpm  \
-        php8.0-imagick  php8.0-redis        php8.0-gd \
-        php8.0-curl     php8.0-imagick && echo "PHP installation complete"
+        php8.1          php8.1-bcmath       php8.1-mbstring \
+        php8.1-curl     php8.1-xml          php8.1-zip \
+        php8.1-mysql    php8.1-pgsql        php8.1-fpm  \
+        php8.1-imagick  php8.1-redis        php8.1-gd \
+        php8.1-curl     php8.1-mongodb php8.1-imagick && echo "PHP installation complete"
 
 # Remove apache2 & install nginx nodejs npm
 RUN apt-get purge apache2 -yqq && apt autoremove -yqq
@@ -29,7 +31,7 @@ RUN apt-get purge apache2 -yqq && apt autoremove -yqq
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin/ --filename=composer
 
 # Upgrading NodeJS
-RUN npm i -g n && n $NODE_VERSION
+RUN npm i -g n svgo && n $NODE_VERSION
 
 # Copy Nginx Configs
 COPY nginx/nginx.conf /etc/nginx/nginx.conf
@@ -42,7 +44,7 @@ RUN ln -sf /dev/stdout /var/log/nginx/access.log \
   && ln -sf /dev/stderr /var/log/nginx/error.log
   
 # script: start_laradocker
-RUN echo 'service php8.0-fpm start && /usr/sbin/nginx -g "daemon off;"' > /usr/bin/start_laradocker && chmod +x /usr/bin/start_laradocker
+RUN echo 'service php8.1-fpm start && /usr/sbin/nginx -g "daemon off;"' > /usr/bin/start_laradocker && chmod +x /usr/bin/start_laradocker
 
 # Set www-data user to host
 RUN userdel -f www-data &&\
