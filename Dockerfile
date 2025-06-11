@@ -1,9 +1,9 @@
-FROM ubuntu:22.04
+FROM  --platform=linux/amd64 ubuntu:22.04
 
 # CONF
 ARG USER_ID=1000
 ARG GROUP_ID=1000
-ENV NODE_VERSION 18
+ENV NODE_VERSION 20
 
 # Basic Packages
 RUN apt-get update -yq && apt install \
