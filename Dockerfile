@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 ubuntu:24.04
+FROM ubuntu:24.04
 
 # CONF
 ARG USER_ID=1000
